@@ -12,6 +12,8 @@ def randVel():
   vel = rand.randrange(-5, 5)
   return vel
 
+balls = []
+
 # The Vector class
 class Vector:
 
@@ -153,13 +155,22 @@ class Ball:
 
   def update(self):
     self.position.add(self.velocity)
+    
+    
+def timer_handler():
+    global balls
+    balls.append(Ball(Vector(randVel(), randVel())))
 
+timer = sgui.create_timer(100, timer_handler)
+timer.start()
 
-v = Vector(randVel(), randVel())
-p = Ball(v)
+def draw(canvas):
+    global balls
+    for i in balls:
+        i.draw(canvas)
 
 frame = sgui.create_frame('canvas', 600 , 400)
-frame.set_draw_handler(p.draw)
+frame.set_draw_handler(draw)
 
 # Start the frame animation
 frame.start()
