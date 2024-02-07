@@ -13,6 +13,8 @@ class Wheel:
         self.vel = Vector()
         self.radius = max(radius, 10)
         self.colour = 'White'
+        self.canvas_width = WIDTH
+        self.canvas_height = HEIGHT
 
     def draw(self, canvas):
         canvas.draw_circle(self.pos.get_p(), self.radius, 1, self.colour, self.colour)
@@ -20,6 +22,10 @@ class Wheel:
     def update(self):
         self.pos.add(self.vel)
         self.vel.multiply(0.85)
+        if self.pos.x > self.canvas_width:
+            self.pos.x = 0
+        elif self.pos.x < 0:
+            self.pos.x = self.canvas_width
 
 class Keyboard:
     def __init__(self):
