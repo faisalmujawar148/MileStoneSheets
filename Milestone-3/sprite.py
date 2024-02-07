@@ -13,14 +13,14 @@ class Keyboard:
     def __init__(self):
         self.left = False
         self.right = False
-        self.space = False  # Track space bar state
+        self.space = False  
 
     def keydown_handler(self, key):
         if key == simplegui.KEY_MAP['left']:
             self.left = True
         elif key == simplegui.KEY_MAP['right']:
             self.right = True
-        elif key == simplegui.KEY_MAP['space']:  # Handle space bar
+        elif key == simplegui.KEY_MAP['space']:  
             self.space = True
 
     def keyup_handler(self, key):
@@ -28,7 +28,7 @@ class Keyboard:
             self.left = False
         elif key == simplegui.KEY_MAP['right']:
             self.right = False
-        elif key == simplegui.KEY_MAP['space']:  # Handle space bar
+        elif key == simplegui.KEY_MAP['space']: 
             self.space = False
 
             
