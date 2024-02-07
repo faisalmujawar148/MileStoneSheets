@@ -45,15 +45,16 @@ class Interaction:
         global MOVE
         global img_rot
         global img_pos
-        if self.keyboard.left:
-            STEP = 0.5
-            MOVE = -1
-        elif self.keyboard.right:
-            STEP = -0.5
-            MOVE = 1
-        else:
-            STEP = 0
-            MOVE = 0
+        if self.on_ground==True:
+            if self.keyboard.left:
+                STEP = 0.5
+                MOVE = -1
+            elif self.keyboard.right:
+                STEP = -0.5
+                MOVE = 1
+            else:
+                STEP = 0
+                MOVE = 0
         if self.keyboard.space and self.on_ground:
             self.jump_velocity = -10  
             self.on_ground = False  
