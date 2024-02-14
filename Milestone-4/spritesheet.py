@@ -37,20 +37,24 @@ class Spritesheet:
             
 spritesheet = Spritesheet('https://www.cs.rhul.ac.uk/courses/CS1830/sprites/runnerSheet.png', 6, 5)
 
-def draw(canvas):
-    spritesheet.draw(canvas)
-
 class Clock:
     def __init__(self):
         self.time = 0
     # increments the value of time by one
     def tick(self):
-        time += 1
+        self.time += 1
         
     def transition(self, frame_duration):
         # returns a boolean that indicates if it is time to move to the next frame.
         return self.time % frame_duration == 0
-
+        
+clock = Clock()
+def draw(canvas):
+    if clock.transition(6):  # Change speed by modifying the frame_duration
+        spritesheet.next_frame()
+    spritesheet.draw(canvas)
+    clock.tick()
+    
 # Create a frame and assign callbacks to event handlers
 frame = simplegui.create_frame('canvas', 600, 400)
 frame.set_draw_handler(draw)
