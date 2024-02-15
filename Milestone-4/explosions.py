@@ -1,4 +1,5 @@
 import simplegui
+import random
 
 class Spritesheet:
     def __init__(self, image, columns, rows, num_frames):
@@ -14,12 +15,12 @@ class Spritesheet:
         self.frame_index = [0, 0]
         self.current_frame = 0
 
-    def draw(self, canvas):
+    def draw(self, canvas, position):
         if self.current_frame < self.num_frames:
             center_source = (self.frame_width * self.frame_index[0] + self.frame_centre[0], self.frame_height * self.frame_index[1] + self.frame_centre[1])
             width_height_source = (self.frame_width, self.frame_height)
         
-            canvas.draw_image(self.image, center_source, width_height_source, (300, 200), (100, 100))
+            canvas.draw_image(self.image, center_source, width_height_source, position, (100, 100))
         
             self.next_frame()
 
@@ -36,8 +37,6 @@ class Spritesheet:
     def done(self):
         return self.current_frame >= self.num_frames
 
-spritesheet = Spritesheet('http://www.cs.rhul.ac.uk/courses/CS1830/sprites/explosion-spritesheet.png', 9, 9, 74)  # 74 frames in the explosion animation
-
 class Clock:
     def __init__(self):
         self.time = 0
@@ -50,12 +49,18 @@ class Clock:
 
 clock = Clock()
 
+explosions = []
+
 def draw(canvas):
-    if not spritesheet.done():
-        if clock.transition(6):  # Change speed by modifying the frame_duration
-            spritesheet.next_frame()
-        spritesheet.draw(canvas)
-        clock.tick()
+    global explosions
+    for explosion in explosions:
+        if not explosion.done():
+            if clock.transition(6):  
+                explosion.next_frame()
+            explosion.draw(canvas, (random.randrange(0, 600), random.randrange(0, 400)))
+            clock.tick()
+    if len(explosions) > 0 and explosions[0].done():
+        explosions.pop(0)
 
 # Create a frame and assign callbacks to event handlers
 frame = simplegui.create_frame('canvas', 600, 400)
@@ -63,3 +68,7 @@ frame.set_draw_handler(draw)
 
 # Start the frame animation
 frame.start()
+
+# Create a list of explosions
+for i in range(10):  # Create 10 explosions
+    explosions.append(Spritesheet('http://www.cs.rhul.ac.uk/courses/CS1830/sprites/explosion-spritesheet.png', 9, 9, 74))
