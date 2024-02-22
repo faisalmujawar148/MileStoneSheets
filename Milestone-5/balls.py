@@ -1,4 +1,3 @@
-
 import random
 import simplegui
 from user305_o32FtUyCKk_0 import Vector
