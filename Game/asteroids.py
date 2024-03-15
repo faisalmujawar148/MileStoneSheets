@@ -11,9 +11,9 @@ IMG1 = simplegui.load_image('https://opengameart.org/sites/default/files/ship5.p
 IMG1_CENTRE = (183, 152)
 IMG1_DIMS = (366, 204)
 
-IMG2 = simplegui.load_image('')
-IMG2_CENTRE = (, )
-IMG2_DIMS = (, )
+IMG2 = simplegui.load_image('https://images.freeimages.com/vhq/images/previews/e23/asteroid-97287.png?fmt=webp&w=500')
+IMG2_CENTRE = (250, 250 )
+IMG2_DIMS = (500,500 )
 
 asteroids = []
 
