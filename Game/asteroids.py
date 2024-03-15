@@ -82,6 +82,7 @@ class Asteroid:
     #insert explosion animation
     spaceship.hp -= 1
     asteroids.remove(index)
+    spaceship.hit()
     
 
   def update(self, index):
@@ -102,6 +103,12 @@ class Spaceship:
 
   def draw(self):
     canvas.draw_image(self.img, self.img_centre, self.img_dims, self.position, ship_scale, self.rotation)
+
+  def hit(self):
+    pass
+
+  def death(self):
+    pass
 
 class Collisions:
   def __init__(self, spaceship):
