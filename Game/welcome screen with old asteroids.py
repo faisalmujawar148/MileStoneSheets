@@ -18,7 +18,6 @@ IMG2_DIMS = (500, 500)
 IMG2_CENTRE = (IMG2_DIMS[0]/2,IMG2_DIMS[1]/2)
 
 score = 0
-final_score = 0
 button_height = 40
 button_width = 150
 button_pos = (90, 360)
@@ -103,8 +102,6 @@ class Spaceship:
         self.draw(canvas)
         if self.hp == 0:
             global score
-            global final_score
-            final_score = score
             Spaceship.hit(self)
             frame = simplegui.create_frame("Game Over", CANVAS_DIMS[0], CANVAS_DIMS[1])
             frame.set_canvas_background('Red')
@@ -115,7 +112,7 @@ class Spaceship:
           
     def drawer(self, canvas, ):
             canvas.draw_text("GAME OVER!", [65, 90], 50, "White")
-            canvas.draw_text("You have " + str(final_score//1) + " points", [70, 200], 35, "Blue")
+            canvas.draw_text("You have " + str(score//1) + " points", [70, 200], 35, "Blue")
             canvas.draw_text("Click the button to restart", [70, 250], 25, "Blue")
             canvas.draw_polygon([(button_pos[0] - button_width/2, button_pos[1] - button_height/2),
                              (button_pos[0] - button_width/2, button_pos[1] + button_height/2),
