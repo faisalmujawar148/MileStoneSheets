@@ -20,13 +20,15 @@ IMG2_CENTRE = (IMG2_DIMS[0]/2,IMG2_DIMS[1]/2)
 #Credit SlashDashGames Studio for the Background
 BACKGROUND = simplegui.load_image('https://i.postimg.cc/9WRzjmwB/bggif.png')
 BACKGROUND_DIMS = (1024, 768)
-MIDGROUND = simplegui.load_image('http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/debris2_blue.png')
+#MIDGROUND = simplegui.load_image('http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/debris2_blue.png')
+MIDGROUND = simplegui.load_image('https://i.ibb.co/SnNcDCt/midground-2x-RIFE-RIFE4-0-41-332fps-ezgif-com-gif-to-sprite-converter.png')
 MIDGROUND_DIMS = (640, 480)
 BORDER = simplegui.load_image('https://i.ibb.co/CnYsJmy/border.png')
 BORDER_DIMS = (1024, 750)
 offset = [0, 0]
 #Counter constants
 score = 0
+final_score = 0
 hit_counter = 0
 bg_counter = 0
 #Sprite constants
@@ -79,9 +81,6 @@ class Edge:
         canvas.draw_polygon([camera((0,0)), camera((0, CANVAS_DIMS[1]+500)), camera((-500, CANVAS_DIMS[1]+500)), camera((-500, 0))],1,'BLACK','BLACK')
         canvas.draw_polygon([camera((0,CANVAS_DIMS[1])), camera((0, CANVAS_DIMS[1]+500)), camera((CANVAS_DIMS[0]+500, CANVAS_DIMS[1]+500)), camera((CANVAS_DIMS[0]+500, CANVAS_DIMS[1]))],1,'BLACK','BLACK')
         canvas.draw_polygon([camera((CANVAS_DIMS[0],CANVAS_DIMS[1])), camera((CANVAS_DIMS[0],-500)), camera((CANVAS_DIMS[0]+500, 0)), camera((CANVAS_DIMS[0]+500, CANVAS_DIMS[1]))],1,'BLACK','BLACK')
-        """canvas.draw_polygon([camera((CANVAS_DIMS[0], CANVAS_DIMS[1])), camera((1524, 1524))],1,'BLACK','BLACK')
-        canvas.draw_polygon([camera((0, CANVAS_DIMS[1])), camera((-1524, -1524))],1,'BLACK','BLACK')
-        canvas.draw_polygon([camera((CANVAS_DIMS[0], CANVAS_DIMS[1])), camera((-1524, -1524))],1,'BLACK','BLACK')"""
 
 class Border:
     def __init__(self,img,dims):
@@ -93,36 +92,20 @@ class Border:
         canvas.draw_image(border.img, (self.dims[0]/2, self.dims[1]/2), self.dims, val, (1029, 768))
         
 class Midground:
-    def __init__(self,img,dims,columns,rows):
+    def __init__(self,img,dims):
         self.img=img
         self.dims=dims
-        self.columns = columns
-        self.rows = rows
-        self.width = self.img.get_width()
-        self.height = self.img.get_height()
-        self.frame_width = self.width/self.columns
-        self.frame_height = self.height/self.rows
-        self.frame_centre = (self.frame_width/2, self.frame_height/2)
-        self.frame_index = [0,0]
         
     def draw(self, canvas):
         global bg_counter
-        center_source = (self.frame_width*self.frame_index[0]+self.frame_centre[0], self.frame_height*self.frame_index[1]+self.frame_centre[1])
-        width_height_source = (self.frame_width, self.frame_height)
-        camval = camera((CANVAS_DIMS[0]/2,CANVAS_DIMS[1]/2))
-        canvas.draw_image(midground.img, center_source, width_height_source, camval, (1000, 768))
-        if bg_counter % 10 == 0:
-            self.next_frame()
         
-    def next_frame(self):
-        self.frame_index[0] += 1
-        if self.frame_index[0] == self.columns:
-            self.frame_index[1] += 1
-            self.frame_index[0] = 0
-        if self.frame_index[1] == self.rows:
-            self.frame_index[1] = 0
-        elif self.frame_index[1] == 1 & self.frame_index[0] ==3:
-            self.frame_index[1]=0
+        move_x = 1028
+        print(bg_counter)
+        camval = camera((CANVAS_DIMS[0]/2,CANVAS_DIMS[1]/2))
+        canvas.draw_image(midground.img, (self.dims[0]/2,self.dims[1]/2), self.dims, camval, (1028, 768))
+        if bg_counter % 10 == 0:
+            move_x+=100
+            print(bg_counter, move_x)
             
 class Background:
     def __init__(self,img,dims,columns,rows):
@@ -211,19 +194,33 @@ class Spaceship:
         
     def update(self, canvas):
         global offset
+        global score
+        global final_score
         offset = [self.position[0]-512, self.position[1]-384]
         self.draw(canvas)
-        if self.hp < 1:
-            frame = simplegui.create_frame("Game Over", CANVAS_DIMS[0], CANVAS_DIMS[1])
-            frame.set_canvas_background('Red')
-            frame.set_mouseclick_handler(Interaction.mouse_handler)
-            frame.set_draw_handler(self.game_over)
-            frame.start()
+        if self.hp == 0:
+            self.hp -= 1
+            final_score = score
+            global frame3
+            frame3 = simplegui.create_frame("Game Over", CANVAS_DIMS[0], CANVAS_DIMS[1])
+            frame3.set_canvas_background('Red')
+            frame3.set_mouseclick_handler(Spaceship.mouse_handler)
+            frame3.set_draw_handler(self.game_over)
+            frame3.start()
+    
+    def mouse_handler(pos):
+        global bullets
+        global asteroids
+        frame3.stop()
+        if (button_pos[0] - button_width / 2 < pos[0] < button_pos[0] + button_width / 2) and (button_pos[1] - button_height / 2 < pos[1] < button_pos[1] + button_height / 2):
+            bullets = []
+            asteroids = []
+            Interaction.button_clicked()
                
     def game_over(self, canvas):
-        global score
+        global final_score
         canvas.draw_text("GAME OVER!", [65, 90], 50, "White")
-        canvas.draw_text("You have " + str(score//1) + " points", [70, 200], 35, "Blue")
+        canvas.draw_text("You have " + str(final_score//1) + " points", [70, 200], 35, "Blue")
         canvas.draw_text("Click the button to restart", [70, 250], 25, "Blue")
         canvas.draw_polygon([(button_pos[0] - button_width/2, button_pos[1] - button_height/2),
                              (button_pos[0] - button_width/2, button_pos[1] + button_height/2),
@@ -281,12 +278,15 @@ class Interaction:
                           
     def button_clicked():
         #Create a frame and assign callbacks to event handlers
-        frame = simplegui.create_frame("Space Fighters", CANVAS_DIMS[0], CANVAS_DIMS[1])
-        frame.set_canvas_background('#2C6A6A')
-        frame.set_draw_handler(draw)
-        frame.set_keydown_handler(keyboard.keydown_handler)
-        frame.set_keyup_handler(keyboard.keyup_handler)
-        frame.start()
+        global score
+        global frame2
+        score = 0
+        frame2 = simplegui.create_frame("Space Fighters", CANVAS_DIMS[0], CANVAS_DIMS[1])
+        frame2.set_canvas_background('#2C6A6A')
+        frame2.set_draw_handler(draw)
+        frame2.set_keydown_handler(keyboard.keydown_handler)
+        frame2.set_keyup_handler(keyboard.keyup_handler)
+        frame2.start()
         
     def draw(canvas):
         canvas.draw_polygon([(button_pos[0] - button_width/2, button_pos[1] - button_height/2),
@@ -308,8 +308,8 @@ class Interaction:
     def mouse_handler(pos):
         global bullets
         global asteroids
+        frame1.stop()
         if (button_pos[0] - button_width / 2 < pos[0] < button_pos[0] + button_width / 2) and (button_pos[1] - button_height / 2 < pos[1] < button_pos[1] + button_height / 2):
-            frame.stop()
             bullets = []
             asteroids = []
             bullet_cd.start()
@@ -419,6 +419,7 @@ class Scoreboard:
         canvas.draw_text(string,(10,19),30,"white","monospace")
         canvas.draw_text(string2,(10,40),30,"white","monospace")
 # Global variables
+move_x=0
 ship_angle = 0
 offset = [0,0]
 text=""
@@ -430,7 +431,7 @@ collisions1 = Collisions1()
 collisions2 = Collisions2()
 scoreboard = Scoreboard()
 background = Background(BACKGROUND, BACKGROUND_DIMS,5,10)
-midground = Midground(MIDGROUND, MIDGROUND_DIMS,1,1)
+midground = Midground(MIDGROUND, MIDGROUND_DIMS)
 border = Border(BORDER, BORDER_DIMS)
 edge = Edge()
 def bullet_cd_handler():
@@ -487,11 +488,12 @@ def draw(canvas):
         ship.hit(canvas, text)
 
     if ship.hp < 1:
-        frame.stop()
+        ship.hp = 10
+        frame2.stop()
 
 # Create a frame and assign callbacks to event handlers
-frame = simplegui.create_frame("Main Menu", CANVAS_DIMS[0], CANVAS_DIMS[1])
-frame.set_canvas_background('Black')
-frame.set_draw_handler(Interaction.welcome)
-frame.set_mouseclick_handler(Interaction.mouse_handler)
-frame.start()
+frame1 = simplegui.create_frame("Main Menu", CANVAS_DIMS[0], CANVAS_DIMS[1])
+frame1.set_canvas_background('Black')
+frame1.set_draw_handler(Interaction.welcome)
+frame1.set_mouseclick_handler(Interaction.mouse_handler)
+frame1.start()
