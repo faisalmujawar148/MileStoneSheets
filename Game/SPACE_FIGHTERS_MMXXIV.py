@@ -271,7 +271,7 @@ class Interaction:
     def __init__(self, keyboard, spaceship):
         self.keyboard = keyboard
         self.booster_velocity = -8  # Initial jump velocity
-        self.accel = 0.5  # Gravity acceleration
+        self.accel = 0.5 
         self.max_vel = 60  # Maximum jump height
         self.friction = 0.9
         self.spaceship = spaceship
