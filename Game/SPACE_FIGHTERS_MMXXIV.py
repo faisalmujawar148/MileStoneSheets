@@ -8,8 +8,8 @@ import math
 #Img constants
 CANVAS_DIMS = (1024, 768)
 bullet_radius = 5
-ship_scale = (60, 60)
-asteroid_scale = (50, 50)
+ship_scale = (70, 70)
+asteroid_scale = (100, 100)
 IMG1 = simplegui.load_image('https://i.ibb.co/yXPtX31/spaceship1.png')
 THRUSTER_IMG1 = simplegui.load_image("https://i.ibb.co/yQ0m2Sm/thrusters.png")
 IMG1_DIMS = (360, 360)
@@ -50,6 +50,8 @@ def hit_timer(canvas, duration):
     hit_counter += 1
     if hit_counter >= duration:
         hit_counter = 0
+        #simplegui.Sound("https://file.io/QRe9MaY47j4h").rewind()
+        #simplegui.Sound("https://file.io/QRe9MaY47j4h").play()
         ship.isHit = False
         
 def randomVel(pos):
@@ -64,8 +66,8 @@ def randomVel(pos):
     return (x, y)
 
 def randomPos():
-    x = random.choice([0,CANVAS_DIMS[0]])
-    y = random.randint(0, CANVAS_DIMS[1])
+    x = random.choice([-1500,CANVAS_DIMS[0]+1000])
+    y = random.randint(-1000, CANVAS_DIMS[1]+1000)
     return camera((x, y))
 
 def randomRot():
@@ -77,10 +79,10 @@ class Edge:
     def __init__(self):
         pass
     def draw(self, canvas):
-        canvas.draw_polygon([camera((-1500,0)), camera((CANVAS_DIMS[0]+500, 0)), camera((CANVAS_DIMS[0]+500, -500)), camera((-1500, -500))],1,'BLACK','BLACK')
-        canvas.draw_polygon([camera((0,0)), camera((0, CANVAS_DIMS[1]+500)), camera((-500, CANVAS_DIMS[1]+500)), camera((-500, 0))],1,'BLACK','BLACK')
-        canvas.draw_polygon([camera((0,CANVAS_DIMS[1])), camera((0, CANVAS_DIMS[1]+500)), camera((CANVAS_DIMS[0]+500, CANVAS_DIMS[1]+500)), camera((CANVAS_DIMS[0]+500, CANVAS_DIMS[1]))],1,'BLACK','BLACK')
-        canvas.draw_polygon([camera((CANVAS_DIMS[0],CANVAS_DIMS[1])), camera((CANVAS_DIMS[0],-500)), camera((CANVAS_DIMS[0]+500, 0)), camera((CANVAS_DIMS[0]+500, CANVAS_DIMS[1]))],1,'BLACK','BLACK')
+        canvas.draw_polygon([camera((-1000,-1000)), camera((CANVAS_DIMS[0]+1500, -1000)), camera((CANVAS_DIMS[0]+1500, -1100)), camera((-2500, -1100))],10,'BLACK','YELLOW')
+        canvas.draw_polygon([camera((-1000,-2000)), camera((-1000, CANVAS_DIMS[1]+1000)), camera((-1100, CANVAS_DIMS[1]+1000)), camera((-1100, -2000))],10,'BLACK','RED')
+        canvas.draw_polygon([camera((-2000,CANVAS_DIMS[1]+1000)), camera((-2000, CANVAS_DIMS[1]+1100)), camera((CANVAS_DIMS[0]+1500, CANVAS_DIMS[1]+1100)), camera((CANVAS_DIMS[0]+1500, CANVAS_DIMS[1]+1000))],10,'BLACK','BLUE')
+        canvas.draw_polygon([camera((CANVAS_DIMS[0]+1000,CANVAS_DIMS[1]+1000)), camera((CANVAS_DIMS[0]+1000,-1500)), camera((CANVAS_DIMS[0]+1100, -1500)), camera((CANVAS_DIMS[0]+1100, CANVAS_DIMS[1]+1000))],10,'BLACK','GREEN')
 
 class Border:
     def __init__(self,img,dims):
@@ -99,9 +101,12 @@ class Midground:
     def draw(self, canvas):
         global bg_counter
         global move_x
-        print(bg_counter)
         camval = camera((CANVAS_DIMS[0]/2,CANVAS_DIMS[1]/2))
-        canvas.draw_image(midground.img, (self.dims[0]/2+move_x,self.dims[1]/2), self.dims, camval, (1028, 768))
+        canvas.draw_image(midground.img, (-1000+move_x,-1000), self.dims, (camval[0]+1000,camval[1]+1000), (1028, 768))
+        for x in range(-2000,CANVAS_DIMS[0]+1500,500):
+            for y in range(-1500,2500,500):
+                canvas.draw_image(midground.img, (self.dims[0]+move_x,self.dims[1]), self.dims, camera((x,y)), (1028, 768))
+        #canvas.draw_image(midground.img, (self.dims[0]+move_x,self.dims[1]), self.dims, camval, (1028, 768))
         if bg_counter % 1 == 0:
             move_x-=0.2
         if move_x<=0:
@@ -123,6 +128,7 @@ class Background:
     def draw(self, canvas):
         global bg_counter
         global offset
+        width_height_source = (1024,758)
         center_source = (self.frame_width*self.frame_index[0]+self.frame_centre[0], self.frame_height*self.frame_index[1]+self.frame_centre[1])
         width_height_source = (self.frame_width, self.frame_height)
         
@@ -352,10 +358,14 @@ class Interaction:
         
         self.spaceship.position = (self.spaceship.position[0] + speed_x * 0.03, self.spaceship.position[1] + speed_y * 0.03)
         ship_angle %= 2 * math.pi
-        if self.spaceship.position[0] < 0 or self.spaceship.position[0] > CANVAS_DIMS[0]:
-            self.spaceship.position = (self.spaceship.position[0] % CANVAS_DIMS[0], self.spaceship.position[1])
-        if self.spaceship.position[1] < 0 or self.spaceship.position[1] > CANVAS_DIMS[1]:
-            self.spaceship.position = (self.spaceship.position[0] % CANVAS_DIMS[1], self.spaceship.position[1] % CANVAS_DIMS[1])
+        if self.spaceship.position[0] < -1000:
+            self.spaceship.position = (CANVAS_DIMS[0]+1000, self.spaceship.position[1])
+        if self.spaceship.position[0] > CANVAS_DIMS[0]+1000:
+            self.spaceship.position = (CANVAS_DIMS[0]-2000, self.spaceship.position[1])
+        if self.spaceship.position[1] < -1000:
+            self.spaceship.position = (self.spaceship.position[0], CANVAS_DIMS[1]+1000)
+        if self.spaceship.position[1] > CANVAS_DIMS[1]+1000:
+            self.spaceship.position = (self.spaceship.position[0], CANVAS_DIMS[1]-1750)
         speed_x -= speed_x*self.friction*0.005
         speed_y -= speed_y*self.friction*0.005
 
@@ -447,7 +457,7 @@ def timer_handler():
         pos = randomPos()
         vel = randomVel(pos)
         asteroids.append(Asteroid(IMG2, IMG2_CENTRE, IMG2_DIMS, pos, vel, randomRot()))
-bullet_cd = simplegui.create_timer(200, bullet_cd_handler)
+bullet_cd = simplegui.create_timer(100, bullet_cd_handler)
 timer = simplegui.create_timer(2000, timer_handler)
 
 # Drawing handler
@@ -474,16 +484,18 @@ def draw(canvas):
     for i in range(len(out_range[1])):
         asteroids.pop(out_range[1][i])
     
-    edge.draw(canvas)
+    
     score += 1/30
     collisions1.update(canvas)
     collisions2.update()
     interaction.update(canvas)
     
+    
+    
+    ship.update(canvas)
+    edge.draw(canvas)
     border.draw(canvas)
     scoreboard.update(canvas)
-    ship.update(canvas)
-    
     if ship.isHit:
         ship.hit(canvas, text)
 
