@@ -23,6 +23,7 @@ IMG2_CENTRE = (IMG2_DIMS[0]/2,IMG2_DIMS[1]/2)
 BACKGROUND = simplegui.load_image('https://i.postimg.cc/9WRzjmwB/bggif.png')
 BACKGROUND_DIMS = (1024, 768)
 #Asteroid by Kim Lathrop
+#MIDGROUND = simplegui.load_image('http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/debris2_blue.png')
 MIDGROUND = simplegui.load_image('https://i.ibb.co/SnNcDCt/midground-2x-RIFE-RIFE4-0-41-332fps-ezgif-com-gif-to-sprite-converter.png')
 MIDGROUND_DIMS = (640, 480)
 BORDER = simplegui.load_image('https://i.ibb.co/CnYsJmy/border.png')
@@ -40,7 +41,7 @@ shooting = False
 #Button constants
 button_height = 40
 button_width = 150
-button_pos = (90, 360)
+button_pos = (CANVAS_DIMS[0]/2, 360)
 
 #Subroutines
 def camera(pos):
@@ -52,6 +53,8 @@ def hit_timer(canvas, duration):
     hit_counter += 1
     if hit_counter >= duration:
         hit_counter = 0
+        #simplegui.Sound("https://file.io/QRe9MaY47j4h").rewind()
+        #simplegui.Sound("https://file.io/QRe9MaY47j4h").play()
         ship.isHit = False
        
 def randomVel(pos):
@@ -102,10 +105,11 @@ class Midground:
         global bg_counter
         global move_x
         camval = camera((CANVAS_DIMS[0]/2,CANVAS_DIMS[1]/2))
-        canvas.draw_image(midground.img, (-1000+move_x,-1000), self.dims, (camval[0]+1000,camval[1]+1000), (1028, 768))
+        canvas.draw_image(midground.img, (-1000+move_x,-1000), self.dims, (camval[0]*CANVAS_DIMS[0]+1000,camval[1]*CANVAS_DIMS[1]+1000), (1028, 768))
         for x in range(-2000,CANVAS_DIMS[0]+1500,500):
             for y in range(-1500,2500,500):
                 canvas.draw_image(midground.img, (self.dims[0]+move_x,self.dims[1]), self.dims, camera((x,y)), (1028, 768))
+        #canvas.draw_image(midground.img, (self.dims[0]+move_x,self.dims[1]), self.dims, camval, (1028, 768))
         if bg_counter % 1 == 0:
             move_x-=0.2
         if move_x<=0:
@@ -144,6 +148,9 @@ class Background:
         if self.frame_index[1] == self.rows:
             self.frame_index[1] = 0
                              
+#def explode(self, canvas, position):
+    #insert explosion animation
+    #canvas.draw_image(---------------------)
 
 class Keyboard:
     def __init__(self):
@@ -188,6 +195,7 @@ class Spaceship:
         self.isHit = False
        
     def move(self, canvas):
+        #thrusters animation and optionally particle effects for that
         global ship_angle
         canvas.draw_image(self.thruster_img, self.img_centre, self.img_dims, camera(self.position), ship_scale, ship_angle-55)
     def draw(self, canvas):
@@ -233,7 +241,8 @@ class Spaceship:
 
     def hit(self, canvas, text):
         #displays randomised text responses when ship collides with asteroids
-        canvas.draw_polygon((camera((self.position[0]+30,self.position[1]+20)),camera((self.position[0]+70,self.position[1]+50))),1,'white','white')
+        canvas.draw_polygon((camera((self.position[0]+30,self.position[1]+20)),camera((self.position[0]+70,self.position[1]+50))),1,'black','white')
+        canvas.draw_circle((camera((self.position[0]+90,self.position[1]+50))),50,5,'red','black')
         canvas.draw_text(text, camera((self.position[0]+70,self.position[1]+60)), 28, 'white')
         hit_timer(canvas, 180)
        
@@ -272,9 +281,9 @@ class Bullet:
 class Interaction:
     def __init__(self, keyboard, spaceship):
         self.keyboard = keyboard
-        self.booster_velocity = -8  # Initial booster velocity
+        self.booster_velocity = -8  # Initial jump velocity
         self.accel = 0.5
-        self.max_vel = 60  # Maximum vel 
+        self.max_vel = 60  # Maximum jump height
         self.friction = 0.9
         self.spaceship = spaceship
                          
@@ -295,16 +304,16 @@ class Interaction:
                              (button_pos[0] - button_width/2, button_pos[1] + button_height/2),
                              (button_pos[0] + button_width/2, button_pos[1] + button_height/2),
                              (button_pos[0] + button_width/2, button_pos[1] - button_height/2)],
-                            1, "White", "Blue")
-        canvas.draw_text("START", (button_pos[0] - button_width/4, button_pos[1] + button_height/4), 24, "White")
+                            1, "White", "Red")
+        canvas.draw_text("SURVIVE", (button_pos[0] - button_width/3, button_pos[1] + button_height/4), 24, "White")
        
     def welcome(canvas):
-        canvas.draw_text("Welcome to Space Fighters!", [65, 90], 45, "Yellow")
-        canvas.draw_text("CAN YOU DEFEAT THE ASTEROIDS?", [70, 150], 20, "Blue")
-        canvas.draw_text("Use your arrow keys to dodge the asteroids", [70, 190], 20, "Blue")
-        canvas.draw_text("and try shooting them by holding the spacebar", [70, 230], 20, "Blue")
-        canvas.draw_text("Are you up for the challenge?", [70, 270], 20, "Blue")
-        canvas.draw_text("Click the button to start", [70, 320], 20, "Purple")
+        canvas.draw_text("WELCOME TO Space Fighters!", [CANVAS_DIMS[0]/4, 90], 45, "Yellow")
+        canvas.draw_text("YOU'RE A ROUGE PILOT LOST IN SPACE", [CANVAS_DIMS[0]/4, 150], 20, "Blue")
+        canvas.draw_text("YOU HAVE BEEN ENTRAPPED BY ALIENS", [CANVAS_DIMS[0]/4, 190], 20, "Blue")
+        canvas.draw_text("USE YOUR ARROW KEYS TO DODGE THE ASTEROIDS", [CANVAS_DIMS[0]/4, 230], 20, "Blue")
+        canvas.draw_text("AND TRY SHOOTING THEM BY HOLDING THE SPACEBAR", [CANVAS_DIMS[0]/4, 270], 20, "Blue")
+        canvas.draw_text("Click the button to start", [CANVAS_DIMS[0]/4, 320], 20, "Purple")
         Interaction.draw(canvas)
    
     def mouse_handler(pos):
@@ -382,10 +391,10 @@ class Collisions1:
                     asteroids[i].isHit = True
                     ship.isHit = True
                     text=random.choice(["L bozo", "-1", "Checkmate in 1", "!! Brilliant move","XD"])
-                             
+                    print('hit')            
                     ship.hp -=1
-                    
-                    
+                    print(ship.hp)
+                    #explode(canvas, asteroids[i].position)
                     ship.hit(canvas, text)
                  
         for i in range(len(debris)):
@@ -409,7 +418,7 @@ class Collisions2:
                         debris[0].append(i)
                         debris[1].append(j)
                         asteroids[j].isHit = True
-                        
+                        #explode(canvas, asteroids[j].position)
         for i in range(len(debris[0])):
             bullets.pop(debris[0][i])
             asteroids.pop(debris[1][i])
