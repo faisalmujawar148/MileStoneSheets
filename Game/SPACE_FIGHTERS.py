@@ -131,7 +131,7 @@ class Background:
     def draw(self, canvas):
         global bg_counter
         global offset
-        width_height_source = (1024,758)
+        width_height_source = (1020,750)
         center_source = (1024,758)
         center_source = (self.frame_width*self.frame_index[0]+self.frame_centre[0], self.frame_height*self.frame_index[1]+self.frame_centre[1])
         width_height_source = (self.frame_width, self.frame_height)
