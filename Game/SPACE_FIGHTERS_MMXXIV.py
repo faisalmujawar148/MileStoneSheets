@@ -6,6 +6,7 @@ except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 import random
 import math
+
 #Img constants
 CANVAS_DIMS = (1024, 768)
 bullet_radius = 8
@@ -22,7 +23,6 @@ IMG2_CENTRE = (IMG2_DIMS[0]/2,IMG2_DIMS[1]/2)
 BACKGROUND = simplegui.load_image('https://i.postimg.cc/9WRzjmwB/bggif.png')
 BACKGROUND_DIMS = (1024, 768)
 #Asteroid by Kim Lathrop
-#MIDGROUND = simplegui.load_image('http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/debris2_blue.png')
 MIDGROUND = simplegui.load_image('https://i.ibb.co/SnNcDCt/midground-2x-RIFE-RIFE4-0-41-332fps-ezgif-com-gif-to-sprite-converter.png')
 MIDGROUND_DIMS = (640, 480)
 BORDER = simplegui.load_image('https://i.ibb.co/CnYsJmy/border.png')
@@ -52,18 +52,16 @@ def hit_timer(canvas, duration):
     hit_counter += 1
     if hit_counter >= duration:
         hit_counter = 0
-        #simplegui.Sound("https://file.io/QRe9MaY47j4h").rewind()
-        #simplegui.Sound("https://file.io/QRe9MaY47j4h").play()
         ship.isHit = False
        
 def randomVel(pos):
-    if pos[0] >= CANVAS_DIMS[0]/2:
+    if pos[0] >= ship.position[0]/2:
         x = random.randint(-3,-1)
-    elif pos[0] < CANVAS_DIMS[0]/2:
+    elif pos[0] < ship.position[0]/2:
         x = random.randint(1,3)
-    if pos[1] >= CANVAS_DIMS[1]/2:
+    if pos[1] >= ship.position[1]/2:
         y = random.randint(-2,-1)
-    elif pos[1] < CANVAS_DIMS[1]/2:
+    elif pos[1] < ship.position[1]/2:
         y=random.randint(1,2)
     return (x, y)
 
@@ -108,7 +106,6 @@ class Midground:
         for x in range(-2000,CANVAS_DIMS[0]+1500,500):
             for y in range(-1500,2500,500):
                 canvas.draw_image(midground.img, (self.dims[0]+move_x,self.dims[1]), self.dims, camera((x,y)), (1028, 768))
-        #canvas.draw_image(midground.img, (self.dims[0]+move_x,self.dims[1]), self.dims, camval, (1028, 768))
         if bg_counter % 1 == 0:
             move_x-=0.2
         if move_x<=0:
@@ -147,9 +144,6 @@ class Background:
         if self.frame_index[1] == self.rows:
             self.frame_index[1] = 0
                              
-#def explode(self, canvas, position):
-    #insert explosion animation
-    #canvas.draw_image(---------------------)
 
 class Keyboard:
     def __init__(self):
@@ -194,7 +188,6 @@ class Spaceship:
         self.isHit = False
        
     def move(self, canvas):
-        #thrusters animation and optionally particle effects for that
         global ship_angle
         canvas.draw_image(self.thruster_img, self.img_centre, self.img_dims, camera(self.position), ship_scale, ship_angle-55)
     def draw(self, canvas):
@@ -279,9 +272,9 @@ class Bullet:
 class Interaction:
     def __init__(self, keyboard, spaceship):
         self.keyboard = keyboard
-        self.booster_velocity = -8  # Initial jump velocity
+        self.booster_velocity = -8  # Initial booster velocity
         self.accel = 0.5
-        self.max_vel = 60  # Maximum jump height
+        self.max_vel = 60  # Maximum vel 
         self.friction = 0.9
         self.spaceship = spaceship
                          
@@ -389,10 +382,10 @@ class Collisions1:
                     asteroids[i].isHit = True
                     ship.isHit = True
                     text=random.choice(["L bozo", "-1", "Checkmate in 1", "!! Brilliant move","XD"])
-                    print('hit')            
+                             
                     ship.hp -=1
-                    print(ship.hp)
-                    #explode(canvas, asteroids[i].position)
+                    
+                    
                     ship.hit(canvas, text)
                  
         for i in range(len(debris)):
@@ -416,7 +409,7 @@ class Collisions2:
                         debris[0].append(i)
                         debris[1].append(j)
                         asteroids[j].isHit = True
-                        #explode(canvas, asteroids[j].position)
+                        
         for i in range(len(debris[0])):
             bullets.pop(debris[0][i])
             asteroids.pop(debris[1][i])
@@ -500,4 +493,19 @@ def draw(canvas):
    
    
     ship.update(canvas)
-    edge.draw(canv
+    edge.draw(canvas)
+    border.draw(canvas)
+    scoreboard.update(canvas)
+    if ship.isHit:
+        ship.hit(canvas, text)
+
+    if ship.hp < 1:
+        ship.hp = 10
+        frame2.stop()
+
+# Create a frame and assign callbacks to event handlers
+frame1 = simplegui.create_frame("Main Menu", CANVAS_DIMS[0], CANVAS_DIMS[1])
+frame1.set_canvas_background('Black')
+frame1.set_draw_handler(Interaction.welcome)
+frame1.set_mouseclick_handler(Interaction.mouse_handler)
+frame1.start()
