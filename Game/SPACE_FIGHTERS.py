@@ -160,6 +160,7 @@ class Keyboard:
         self.up = False
         self.down = False
 
+     
     def keydown_handler(self, key):
         if key == simplegui.KEY_MAP['left']:
             self.left = True
@@ -172,6 +173,7 @@ class Keyboard:
         elif key == simplegui.KEY_MAP['space']:
             self.space = True
 
+    
     def keyup_handler(self, key):
         if key == simplegui.KEY_MAP['left']:
             self.left = False
@@ -246,6 +248,7 @@ class Spaceship:
         canvas.draw_text(text, camera((self.position[0]+70,self.position[1]+60)), 28, 'white')
         hit_timer(canvas, 180)
        
+   
 class Asteroid:
     def __init__(self, img, img_centre, img_dims, position, vel, rotation):
         self.img = img
@@ -469,6 +472,7 @@ if (asteroid_timer) > 500:
 timer = simplegui.create_timer(asteroid_timer, timer_handler)
 
 # Drawing handler
+
 def draw(canvas):
     global bg_counter
     global score
